@@ -5,7 +5,6 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
@@ -30,7 +29,7 @@ public class LocalShell {
                     int numeroBarraDeProgresso = porcentagemDeUso / 10;
                     barraDeProgresso.set(numeroBarraDeProgresso, "=");
                 }
-                System.out.print( "Porcentagem de uso " + porcentagemDeUso + "%" + "[" + barraDeProgresso + "]");
+                System.out.print( "Porcentagem de uso " + porcentagemDeUso + "% "  + barraDeProgresso );
             }
             if (i > 25800) {
                 controle = false;
