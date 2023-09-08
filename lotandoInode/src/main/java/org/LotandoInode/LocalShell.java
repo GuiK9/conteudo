@@ -23,7 +23,8 @@ public class LocalShell {
             shell.executeCommand("dd if=/dev/urandom of=/mnt/teste/" + i + ".bin bs=1 count=1");
             if (i % 100 == 0){
                 ClearConsole();
-                int porcentagemDeUso = Integer.parseInt(shell.executeCommand("df -i /mnt/teste").substring(37, 39).trim());
+                int porcentagemDeUso = Integer.parseInt(shell.executeCommand("df -i /mnt/teste").substring(37, 38).trim());
+                System.out.println(porcentagemDeUso);
 
                 if(porcentagemDeUso % 10 == 0) {
                     int numeroBarraDeProgresso = porcentagemDeUso / 10;
