@@ -6,41 +6,55 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.logging.Logger;
+
+import static java.lang.Integer.parseInt;
 
 public class LocalShell {
+    static final LocalShell shell = new LocalShell();
 
     public static void main (String[] args) throws IOException {
-        final LocalShell shell = new LocalShell();
 
         Boolean controle = true;
-        ArrayList<String> barraDeProgresso = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            barraDeProgresso.add(" ");
-        }
+        ArrayList<String> barraDeProgresso = generateBarraDeProgresso();
+        barraDeProgresso.set(0, "=");
 
         for(int i = 0; controle; i++){
-            shell.executeCommand("dd if=/dev/urandom of=/mnt/teste/" + i + ".bin bs=1 count=1");
+            addBinary(i);
             if (i % 100 == 0){
                 ClearConsole();
-                int porcentagemDeUso = Integer.parseInt(shell.executeCommand("df -i /mnt/teste").substring(37, 38).trim());
-                System.out.println(porcentagemDeUso);
-
-                if(porcentagemDeUso % 10 == 0) {
-                    int numeroBarraDeProgresso = porcentagemDeUso / 10;
-                    barraDeProgresso.set(numeroBarraDeProgresso, "=");
+                String porcentagemDeUso = executeCommand("df -i /mnt/teste").substring(36, 40).trim().replace("%", "");
+                if (parseInt(porcentagemDeUso) % 10 == 0){
+                    barraDeProgresso.set((int) Math.ceil(Double.parseDouble(porcentagemDeUso) / 10), "=");
                 }
-                System.out.print( "Porcentagem de uso " + porcentagemDeUso + "% "  + barraDeProgresso );
+                String barraDeProgressoString = concatenarArray(barraDeProgresso);
+                System.out.println( "Preenchendo inodes " + "[" + barraDeProgressoString + "] " + porcentagemDeUso + "%");
             }
             if (i > 25800) {
                 controle = false;
             }
         }
+
     }
 
-    private static final Logger log = Logger.getLogger(LocalShell.class.getName());
+    public static String concatenarArray(ArrayList<String> array) {
+        StringBuilder resultado = new StringBuilder();
 
-    public String executeCommand(final String command) throws IOException {
+        for (String elemento : array) {
+            resultado.append(elemento);
+        }
+
+        return resultado.toString();
+    }
+
+    private static ArrayList<String> generateBarraDeProgresso() {
+        ArrayList<String> barraDeProgresso = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            barraDeProgresso.add(" ");
+        }
+        return barraDeProgresso;
+    }
+
+    public static String executeCommand(final String command) throws IOException {
 
         final ArrayList<String> commands = new ArrayList<String>();
         commands.add("/bin/bash");
@@ -64,7 +78,7 @@ public class LocalShell {
              return linha;
 
         } catch (IOException ioe) {
-            log.severe("Erro ao executar comando shell" + ioe.getMessage());
+            System.out.println(ioe.getMessage());
             throw ioe;
         } finally {
             secureClose(br);
@@ -72,17 +86,19 @@ public class LocalShell {
     }
 
 
-    private void secureClose(final Closeable resource) {
+    private static void secureClose(final Closeable resource) {
         try {
             if (resource != null) {
                 resource.close();
             }
         } catch (IOException ex) {
-            log.severe("Erro = " + ex.getMessage());
+            System.out.println(ex.getMessage());
         }
     }
 
-
+    public static void addBinary(Integer i) throws IOException {
+        executeCommand("dd if=/dev/urandom of=/mnt/teste/" + i + ".bin bs=1 count=1");
+    }
 
     public static void ClearConsole(){
         try{
