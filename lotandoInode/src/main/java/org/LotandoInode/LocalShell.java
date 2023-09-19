@@ -10,27 +10,30 @@ import java.util.ArrayList;
 import static java.lang.Integer.parseInt;
 
 public class LocalShell {
-    static final LocalShell shell = new LocalShell();
-
     public static void main (String[] args) throws IOException {
 
-        Boolean controle = true;
+        boolean controle = true;
         ArrayList<String> barraDeProgresso = generateBarraDeProgresso();
         barraDeProgresso.set(0, "=");
 
         for(int i = 0; controle; i++){
             addBinary(i);
-            if (i % 100 == 0){
+            if (i % 100 == 0) {
                 ClearConsole();
-                String porcentagemDeUso = executeCommand("df -i /mnt/teste").substring(36, 40).trim().replace("%", "");
-                if (parseInt(porcentagemDeUso) % 10 == 0){
-                    barraDeProgresso.set((int) Math.ceil(Double.parseDouble(porcentagemDeUso) / 10), "=");
+                String porcentagemDeUso = executeCommand("df -i /mnt/teste").substring(35, 40).trim().replace("%", "");
+                try {
+                    if (parseInt(porcentagemDeUso) % 10 == 0) {
+                        barraDeProgresso.set((int) Math.ceil(Double.parseDouble(porcentagemDeUso) / 10), "=");
+                    }
+                    String barraDeProgressoString = concatenarArray(barraDeProgresso);
+                    System.out.println("Preenchendo inodes " + "[" + barraDeProgressoString + "] " + porcentagemDeUso + "%");
+
+                    if (i > 42768) {
+                        controle = false;
+                    }
+                } catch (IndexOutOfBoundsException e){
+                    System.out.println("Acabou :)");
                 }
-                String barraDeProgressoString = concatenarArray(barraDeProgresso);
-                System.out.println( "Preenchendo inodes " + "[" + barraDeProgressoString + "] " + porcentagemDeUso + "%");
-            }
-            if (i > 25800) {
-                controle = false;
             }
         }
 
@@ -56,7 +59,7 @@ public class LocalShell {
 
     public static String executeCommand(final String command) throws IOException {
 
-        final ArrayList<String> commands = new ArrayList<String>();
+        final ArrayList<String> commands = new ArrayList<>();
         commands.add("/bin/bash");
         commands.add("-c");
         commands.add(command);
@@ -73,9 +76,7 @@ public class LocalShell {
 
             br.readLine();
 
-            String linha =  br.readLine();
-
-             return linha;
+            return br.readLine();
 
         } catch (IOException ioe) {
             System.out.println(ioe.getMessage());
@@ -98,6 +99,7 @@ public class LocalShell {
 
     public static void addBinary(Integer i) throws IOException {
         executeCommand("dd if=/dev/urandom of=/mnt/teste/" + i + ".bin bs=1 count=1");
+
     }
 
     public static void ClearConsole(){
@@ -106,7 +108,7 @@ public class LocalShell {
                 Process startProcess = pb.inheritIO().start();
                 startProcess.waitFor();
         }catch(Exception e){
-            System.out.println(e);
+            System.out.println(e.getMessage());
         }
     }
 }
