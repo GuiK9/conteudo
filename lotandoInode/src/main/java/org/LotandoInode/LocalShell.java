@@ -12,11 +12,10 @@ import static java.lang.Integer.parseInt;
 public class LocalShell {
     public static void main (String[] args) throws IOException {
 
-        boolean controle = true;
         ArrayList<String> barraDeProgresso = generateBarraDeProgresso();
         barraDeProgresso.set(0, "=");
 
-        for(int i = 0; controle; i++){
+        for(int i = 0; true; i++){
             addBinary(i);
             if (i % 100 == 0) {
                 ClearConsole();
@@ -28,11 +27,9 @@ public class LocalShell {
                     String barraDeProgressoString = concatenarArray(barraDeProgresso);
                     System.out.println("Preenchendo inodes " + "[" + barraDeProgressoString + "] " + porcentagemDeUso + "%");
 
-                    if (i > 42768) {
-                        controle = false;
-                    }
                 } catch (IndexOutOfBoundsException e){
                     System.out.println("Acabou :)");
+                    return;
                 }
             }
         }
