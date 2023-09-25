@@ -15,6 +15,7 @@ public class LocalShell {
         ArrayList<String> barraDeProgresso = generateBarraDeProgresso();
         barraDeProgresso.set(0, "=");
 
+
         for(int i = 0; true; i++){
             addBinary(i);
             if (i % 100 == 0) {
